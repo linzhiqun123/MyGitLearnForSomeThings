@@ -94,6 +94,7 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
         if(isABoolean(message.toString())){
             return;
         }
+        System.out.println("This is Lzq2021/11/15");
 
         System.out.println(message);
     }
