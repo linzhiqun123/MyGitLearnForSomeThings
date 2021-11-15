@@ -95,6 +95,7 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
             return;
         }
         System.out.println("This is Lzq2021/11/15");
+        System.out.println("HHHH");
 
         System.out.println(message);
     }
