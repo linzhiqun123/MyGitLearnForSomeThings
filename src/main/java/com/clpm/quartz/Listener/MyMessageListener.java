@@ -89,7 +89,7 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
 //        String channel = String.valueOf(serializer.deserialize(message.getChannel()));
 //        String body = String.valueOf(serializer.deserialize(message.getBody()));
         redisTemplate.opsForValue().increment(new StringBuilder(message.toString()).append("_expire").toString());
-
+        log.info("redis配置文件是否生效{}",redisConfigProperties.getDatabase());
         if(isABoolean(message.toString())){
             return;
         }
