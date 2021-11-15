@@ -73,6 +73,7 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
             RedisScript<String> redisScript = new DefaultRedisScript<String>(luaScript, String.class);
             Object execute = redisTemplate.execute(redisScript, ImmutableList.of(body), body, secon);
             //第一次执行则走下面的方法
+            //测试下git合并
             if(execute!=null && execute.toString().equals("0")){
                 return true;
             }
