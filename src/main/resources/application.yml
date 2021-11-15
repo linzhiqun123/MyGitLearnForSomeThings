@@ -1,0 +1,59 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  quartz:
+    job-store-type: jdbc # quartz����洢���ͣ�jdbc��memory
+    wait-for-jobs-to-complete-on-shutdown: true # �ر��ǵȴ��������
+    overwrite-existing-jobs: true # ���Ը������е�����
+    properties: # quartzԭ������
+      org:
+        quartz:
+          scheduler:
+            instanceName: scheduler # ������ʵ������
+            instanceId: AUTO # ������ʵ��ID�Զ�����
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX # ������Ϣ�洢������
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate # ʹ����ȫ����JDBC������
+            tablePrefix: QRTZ_ # quartz��ر�ǰ׺
+            useProperties: false # �Ƿ�JobDataMap�е�����תΪ�ַ����洢
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool # ָ���̳߳�ʵ���࣬�Ե������ṩ�̶���С���̳߳�
+            threadCount: 10 # ���ò����߳�����
+            threadPriority: 5 # ָ���߳����ȼ�
+
+  jpa:
+    hibernate:
+      ejb:
+        interceptor: com.clpm.quartz.config.HibernateInteptor
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      hibernate:
+        session_factory:
+          #org.hibernate.EmptyInterceptor类的拓展
+          interceptor: com.clpm.quartz.config.HibernateInteptor
+
+
+  thymeleaf:
+    cache: false # �ر�ҳ�滺��
+    encoding: UTF-8 # ģ�����
+    prefix: classpath:/templates/  # ҳ��ӳ��·��
+    suffix: .html # ��ͼ��ĺ�׺
+    mode: HTML5 # ģ��ģʽ
+
+mybatis:
+  mapper-locations:
+    - classpath:Mapper/*.xml
+    - classpath*:com/**/mapper/*.xml
+
+logging:
+  level:
+    com.clpm.quartz.mapper: DEBUG
+
+

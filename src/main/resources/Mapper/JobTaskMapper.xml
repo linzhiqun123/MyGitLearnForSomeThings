@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clpm.quartz.mapper.jobTaskMapper">
+
+
+    <insert id="insertQuartzTask" parameterType="com.clpm.quartz.job.JobTask">
+     insert into quartz_test(job_name,create_author,create_time,end_time,job_data)
+     values (#{jobName},#{createAuthor},#{createTime},#{endTime},#{jobData})
+    </insert>
+
+
+    <select id="findJobTasks" resultType="com.clpm.quartz.job.JobTask">
+    select job_name as jobName,
+     create_author as createAuthor,
+     create_time as createTime,
+     end_time as endTime,
+     job_data as jobData
+     from quartz_test
+    </select>
+
+</mapper>

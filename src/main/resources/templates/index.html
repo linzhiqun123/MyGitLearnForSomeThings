@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    　　<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+<H1>Hello World</H1>
+<form  >
+    <input name="userName" type="text" id="userName">
+    <input name="passWord" type="text" id="userPwd">
+    <input type="button" onclick="login()" value="提交">
+</form>
+</body>
+<script type="text/javascript">
+
+
+    // 创建axios实例
+    const service = axios.create({
+        baseURL: '/schedule/', // api 的 base_url
+        timeout: 5000 // 请求超时时间
+    })
+
+    // request拦截器
+    service.interceptors.request.use(
+        config => {
+            config.headers['Authorization'] = "sadasd" // 让每个请求携带自定义token 请根据实际情况自行修改
+            config.headers['Content-Type'] = 'application/json'
+            return config
+        },
+        error => {
+            // Do something with request error
+            console.log(error) // for debug
+            Promise.reject(error)
+        }
+    )
+
+
+    function queryData() {
+        var name=$("#userName").val();
+        var pwd=$("#userPwd").val();
+        console.log(name);
+        console.log(pwd);
+       return service.post('/submitForm',JSON.stringify({'userName':name,'passWord':pwd}));
+        // return  new Promise(function(resolve, reject){
+        //
+        //     $.ajax({
+        //         url:'/schedule/submitForm',
+        //         type:'post',
+        //         contentType : "application/json;charset=utf-8",
+        //         data:JSON.stringify({'userName':name,'passWord':pwd}),
+        //         dataType:'text',
+        //         success:function(data){
+        //             resolve(data);
+        //         },
+        //         error:function(error){
+        //             reject(error);
+        //         }
+        //     })
+        // });
+    }
+
+    function login() {
+        queryData().then(function(data) {
+            console.info(data)
+            console.info("Promise 执行成功");
+        }).catch (function(err) {
+            console.info("Promise 执行失败")
+            console.error(err)
+        })
+    };
+</script>
+</html>
