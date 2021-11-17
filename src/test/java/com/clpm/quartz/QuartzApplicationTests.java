@@ -3,6 +3,7 @@ package com.clpm.quartz;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.clpm.quartz.job.JsonsRootBean;
+import com.github.pagehelper.PageInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -61,6 +62,7 @@ class QuartzApplicationTests {
     //添加索引
     @Test
     void contextLoads() {
+
         // 创建索引 - 请求对象
         CreateIndexRequest request = new CreateIndexRequest("quartz");
         // 发送请求，获取响应
