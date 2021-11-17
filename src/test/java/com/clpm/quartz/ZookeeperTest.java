@@ -1,6 +1,7 @@
 package com.clpm.quartz;
 
 import com.clpm.quartz.Util.DistributedLock;
+import com.clpm.quartz.Util.MyDistributeLock;
 import com.clpm.quartz.Util.ZookeeperDistributedLock;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
@@ -107,15 +108,15 @@ public class ZookeeperTest {
 
 
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
-
-        ZookeeperDistributedLock distributedLock = new ZookeeperDistributedLock();
+        MyDistributeLock distributedLock = new MyDistributeLock();
+//        ZookeeperDistributedLock distributedLock = new ZookeeperDistributedLock();
 
         for (int i = 0; i < 5; i++) {
             fixedThreadPool.submit(()->{
                 distributedLock.Lock();
                 try {
                     //休眠2s
-                    TimeUnit.SECONDS.sleep(2);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -126,8 +127,9 @@ public class ZookeeperTest {
         }
 
         //防止线程结束
-        TimeUnit.SECONDS.sleep(12);
+        TimeUnit.SECONDS.sleep(20);
 
     }
-
+    //Redis分布式原理是lua脚本加自旋锁
+    //Zookeeper分布式锁是根据节点和线程的挂起和唤醒
 }
