@@ -29,7 +29,7 @@ public class ZookeeperDistributedLock {
 
                     try {
                         List<String> myDistributedLock = zkClient.getChildren("/MyDistributedLock", true);
-                       log.info("节点为"+myDistributedLock.stream().collect(Collectors.joining(",")));
+//                       log.info("节点为"+myDistributedLock.stream().collect(Collectors.joining(",")));
                     } catch (KeeperException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
@@ -60,7 +60,7 @@ public class ZookeeperDistributedLock {
     //锁方法
     public  synchronized   boolean  TryLock() throws KeeperException, InterruptedException {
 
-        //创建有编号的临时节点
+        //创建有编号的临时节点  --Bug原因,定义为了全局变量,导致currentNode在多个线程时被改写,应该只定义为局部变量,用ThreadLocal进行保存
        String   currentNode = zkClient.create("/MyDistributedLock" + "/seq_", null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 
        curThreadLocal.set(currentNode);
@@ -93,7 +93,11 @@ public class ZookeeperDistributedLock {
         try{
 
             if(!TryLock()){
-                zkClient.getData("/MyDistributedLock/"+threadLocal.get(), watchedEvent -> LockSupport.unpark(currentThread), null);
+                log.info(currentThread+"获取锁失败,进入阻塞"+curThreadLocal.get()+"监听上一个节点"+threadLocal.get());
+                zkClient.getData("/MyDistributedLock/"+threadLocal.get(), watchedEvent ->{
+                    log.info("阻塞被唤醒");
+                    LockSupport.unpark(currentThread);
+                } , null);
                 LockSupport.park();
                 log.info(currentThread+"成功获取分布式锁");
 //            countDownLatch=new CountDownLatch(1);
@@ -126,6 +130,10 @@ public class ZookeeperDistributedLock {
             log.info(Thread.currentThread()+"释放了分布式锁");
         }catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            //线程变量移除避免内存溢出
+            curThreadLocal.remove();
+            threadLocal.remove();
         }
     }
 
