@@ -1,9 +1,8 @@
-package com.clpm.quartz.Util;
+package com.clpm.quartz.util;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.clpm.quartz.Jpa.Query;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.criteria.*;
 import java.lang.reflect.Field;

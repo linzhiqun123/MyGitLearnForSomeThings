@@ -1,4 +1,4 @@
-package com.clpm.quartz.Util;
+package com.clpm.quartz.util;
 
 import org.apache.zookeeper.KeeperException;
 

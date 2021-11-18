@@ -1,4 +1,4 @@
-package com.clpm.quartz.Util;
+package com.clpm.quartz.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
-import java.util.stream.Collectors;
 
 //通过监听和CountDownLatch方式实现分布式锁
 @Slf4j

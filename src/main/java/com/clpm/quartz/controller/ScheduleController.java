@@ -1,10 +1,9 @@
 package com.clpm.quartz.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.clpm.quartz.Jpa.YxStoreOrderQueryCriteria;
 import com.clpm.quartz.Jpa.YxStoreProduct;
 import com.clpm.quartz.Jpa.YxStoreProoductRepository;
-import com.clpm.quartz.Util.QueryHelp;
+import com.clpm.quartz.util.QueryHelp;
 import com.clpm.quartz.config.Limit;
 import com.clpm.quartz.job.JobTask;
 import com.clpm.quartz.job.SendEmailJob;
@@ -17,7 +16,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

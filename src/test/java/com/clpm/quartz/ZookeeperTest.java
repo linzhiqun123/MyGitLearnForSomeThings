@@ -1,10 +1,8 @@
 package com.clpm.quartz;
 
-import com.clpm.quartz.Util.*;
+import com.clpm.quartz.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.apache.zookeeper.CreateMode.EPHEMERAL;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
