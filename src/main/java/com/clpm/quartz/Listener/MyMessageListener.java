@@ -34,7 +34,6 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
     }
     //加锁 读和取和设置过期的操作 不是原子操作
     public boolean isABoolean(String body){
-        boolean b = false;
         RLock isABoolean = redissonClient.getLock("isABoolean");
         StringBuilder append = new StringBuilder(body).append(":_expire");
         isABoolean.lock();
@@ -88,6 +87,9 @@ public class MyMessageListener extends KeyExpirationEventMessageListener {
 //        RedisSerializer<?> serializer = redisTemplate.getValueSerializer();
 //        String channel = String.valueOf(serializer.deserialize(message.getChannel()));
 //        String body = String.valueOf(serializer.deserialize(message.getBody()));
+        if (!isABoolean(message.toString())) {
+            return;
+        }
         redisTemplate.opsForValue().increment(new StringBuilder(message.toString()).append("_expire").toString());
         log.info("redis配置文件是否生效{}",redisConfigProperties.getDatabase());
         if(isABoolean(message.toString())){

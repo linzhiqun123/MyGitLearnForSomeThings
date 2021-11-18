@@ -1,22 +1,26 @@
 package com.clpm.quartz;
 
-import com.clpm.quartz.Util.DistributedLock;
-import com.clpm.quartz.Util.MyDistributeLock;
-import com.clpm.quartz.Util.ZookeeperDistributedLock;
+import com.clpm.quartz.Util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.apache.zookeeper.CreateMode.EPHEMERAL;
 
@@ -29,6 +33,9 @@ public class ZookeeperTest {
     private static int sessionTimeout = 2000;
     private ZooKeeper zkClient = null;
     private String parentNode = "/servers";
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 //    @Before
     public void init() throws IOException {
@@ -101,6 +108,14 @@ public class ZookeeperTest {
         }
     }
 
+    @Test
+    public void TestRedis(){
+        redisTemplate.opsForValue().set("Test","Test");
+
+        System.out.println(redisTemplate.opsForValue().get("Test"));
+
+    }
+
 
     @Test
     public void doTestZookeeperLock() throws InterruptedException {
@@ -108,10 +123,12 @@ public class ZookeeperTest {
 
 
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
-        MyDistributeLock distributedLock = new MyDistributeLock();
+//        MyDistributeLock distributedLock = new MyDistributeLock();
 //        ZookeeperDistributedLock distributedLock = new ZookeeperDistributedLock();
 
         for (int i = 0; i < 5; i++) {
+            RedisLock distributedLock = new RedisLock("MyLock",redisTemplate);
+            int finalI = i;
             fixedThreadPool.submit(()->{
                 distributedLock.Lock();
                 try {
@@ -123,13 +140,75 @@ public class ZookeeperTest {
                     distributedLock.releaseLock();
                 }
             });
-
         }
 
         //防止线程结束
-        TimeUnit.SECONDS.sleep(20);
+        TimeUnit.SECONDS.sleep(40);
 
     }
     //Redis分布式原理是lua脚本加自旋锁
     //Zookeeper分布式锁是根据节点和线程的挂起和唤醒
+
+
+
+
+    //测试集合
+    @Test
+    public void TestCollection(){
+
+//        List<String> stringArrayList = new ArrayList<>();
+//        stringArrayList.add("Maga");
+//
+//        stringArrayList.add(1,"六神");
+//
+//        System.out.println(stringArrayList.size());
+//
+//        System.out.println(stringArrayList.stream().collect(Collectors.joining(",")));
+//
+//
+//        /**
+//         *   复制数组
+//         * @param src 源数组
+//         * @param srcPos 源数组中的起始位置
+//         * @param dest 目标数组
+//         * @param destPos 目标数组中的起始位置
+//         * @param length 要复制的数组元素的数量
+//         */
+////        public static native void arraycopy(Object src,  int  srcPos,
+////        Object dest, int destPos,
+////        int length);
+//
+//        int[] a = new int[10];
+//        a[0] = 0;
+//        a[1] = 1;
+//        a[2] = 2;
+//        a[3] = 3;
+//        System.arraycopy(a, 2, a, 4, 3);
+//        a[2]=99;
+//        for (int i = 0; i < a.length; i++) {
+//            System.out.print(a[i] + " ");
+//        }
+
+        //HashMap的组成是数组加上链表结构,链表是解决哈希冲突,超过8会转为红绿树,数组初始有16个,扩容时候翻倍
+        //Node链表的遍历方法 扩容重新计算索引值,链表也要重新迁移，需要避免扩容操作,扩容操作数组长度翻倍
+//        Node的结构为<K,V>为value,next,pre也为Node的结构,pre为Null为首节点,next为null为尾节点这样
+
+        MyHashMap<String, String> stringStringMyHashMap = new MyHashMap<>();
+
+        stringStringMyHashMap.put("Test","Test");
+        stringStringMyHashMap.put("Jun","Jun");
+        stringStringMyHashMap.put("LI","LI");
+        stringStringMyHashMap.put("YANG","YANG");
+        stringStringMyHashMap.put("LI","lin");
+
+    }
+
+
+
+
+
+
+
+
+
 }
