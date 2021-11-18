@@ -11,10 +11,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Vector;
+import java.util.concurrent.*;
+import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -146,7 +151,7 @@ public class ZookeeperTest {
 
     //测试集合
     @Test
-    public void TestCollection(){
+    public void TestCollection() throws ExecutionException, InterruptedException {
 
 //        List<String> stringArrayList = new ArrayList<>();
 //        stringArrayList.add("Maga");
@@ -185,22 +190,55 @@ public class ZookeeperTest {
         //Node链表的遍历方法 扩容重新计算索引值,链表也要重新迁移，需要避免扩容操作,扩容操作数组长度翻倍
 //        Node的结构为<K,V>为value,next,pre也为Node的结构,pre为Null为首节点,next为null为尾节点这样
 
-        MyHashMap<String, String> stringStringMyHashMap = new MyHashMap<>();
+//        MyHashMap<String, String> stringStringMyHashMap = new MyHashMap<>();
 
-        stringStringMyHashMap.put("Test","Test");
-        stringStringMyHashMap.put("Jun","Jun");
-        stringStringMyHashMap.put("LI","LI");
-        stringStringMyHashMap.put("YANG","YANG");
-        stringStringMyHashMap.put("LI","lin");
+        ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(3);
+        /**
+         *  corePoolSize : 核心线程数定义了最小可以同时运行的线程数量。
+         * maximumPoolSize : 当队列中存放的任务达到队列容量的时候，当前可以同时运行的线程数量变为最大线程数。
+         * workQueue: 当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，新任务就会被存放在队列中。
+         * ThreadPoolExecutor 饱和策略定义:
+         *
+         * 如果当前同时运行的线程数量达到最大线程数量并且队列也已经被放满了任务时，ThreadPoolTaskExecutor 定义一些策略:
+         *
+         *
+         */
+        ArrayList<Integer> stringArrayList = new ArrayList<>();
+        List<CompletableFuture<Integer>> completableFutureList=new Vector<>();
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 10, 1L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(100),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+
+         SimpleDateFormat formater = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+
+        long currentTimeMillis = System.currentTimeMillis();
+        for (int i = 0; i < 10;i++){
+            int finalI = i;
+            completableFutureList.add(CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + " Start. Time = " + formater.format(new Date()));
+                try {
+                    TimeUnit.SECONDS.sleep(finalI);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + " End. Time = " + formater.format(new Date()));
+                stringArrayList.add(finalI);
+                return finalI;
+            }, threadPoolExecutor)
+            );
+        }
+
+        CompletableFuture.allOf(completableFutureList.stream().toArray(CompletableFuture[]::new)).join();
+
+        System.out.println("结束时间为"+(System.currentTimeMillis()-currentTimeMillis));
+
+            //关闭线程池
+            threadPoolExecutor.shutdownNow();
+
+        System.out.println(stringArrayList.stream().toArray(Integer[]::new));
+
+        //Todo 实现下项目启动时候的翻译加载
 
     }
-
-
-
-
-
-
-
-
-
 }
