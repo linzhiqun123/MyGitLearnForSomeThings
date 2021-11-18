@@ -3,6 +3,7 @@ package com.clpm.quartz.controller;
 import com.clpm.quartz.Jpa.YxStoreOrderQueryCriteria;
 import com.clpm.quartz.Jpa.YxStoreProduct;
 import com.clpm.quartz.Jpa.YxStoreProoductRepository;
+import com.clpm.quartz.config.CodeTable;
 import com.clpm.quartz.util.QueryHelp;
 import com.clpm.quartz.config.Limit;
 import com.clpm.quartz.job.JobTask;
@@ -165,6 +166,7 @@ public class ScheduleController {
     @ApiOperation("限流测试,redis实现分布式锁测试")
     @ResponseBody
     public String indexHello(){
+        String productInfo = CodeTable.codeMap.get("测试云产品");
         redisTemplate.opsForValue().set("elasticsearch","123455",10, TimeUnit.SECONDS);
         return "index";
     }
