@@ -1,7 +1,6 @@
 package com.clpm.quartz.util;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -18,6 +17,10 @@ public class SpringUtils implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-             context = applicationContext;
+        SpringUtils.context = applicationContext;
     }
+
+
+
+
 }
