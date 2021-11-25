@@ -1,11 +1,14 @@
 package com.clpm.quartz.job;
 
+import com.clpm.quartz.config.AutoId;
+
 import java.io.Serializable;
 import java.util.Date;
 
 public class JobTask implements Serializable {
 
-    private int jobId;
+    @AutoId
+    private String jobId;
 
     public JobTask() {
     }
@@ -25,11 +28,11 @@ public class JobTask implements Serializable {
         this.jobData = jobData;
     }
 
-    public int getJobId() {
+    public String getJobId() {
         return jobId;
     }
 
-    public void setJobId(int jobId) {
+    public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 

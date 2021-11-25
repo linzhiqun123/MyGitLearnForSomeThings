@@ -55,6 +55,7 @@ public class ScheduleController {
 
     @ApiOperation("定时发送邮件")
     @PostMapping("/sendEmail")
+    @ResponseBody
     public CommonResult sendEmail(@RequestParam(name = "data",required = false) String data) {
 //        LocalDate nowLocalDate = LocalDate.now();
 //        Date date = Date.from(nowLocalDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant());

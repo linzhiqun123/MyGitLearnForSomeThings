@@ -4,8 +4,8 @@
 
 
     <insert id="insertQuartzTask" parameterType="com.clpm.quartz.job.JobTask">
-     insert into quartz_test(job_name,create_author,create_time,end_time,job_data)
-     values (#{jobName},#{createAuthor},#{createTime},#{endTime},#{jobData})
+     insert into quartz_test(job_id,job_name,create_author,create_time,end_time,job_data)
+     values (#{jobId},#{jobName},#{createAuthor},#{createTime},#{endTime},#{jobData})
     </insert>
 
 

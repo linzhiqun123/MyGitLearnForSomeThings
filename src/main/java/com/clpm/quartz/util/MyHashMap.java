@@ -3,8 +3,9 @@ package com.clpm.quartz.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Objects;
+import java.security.PublicKey;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //自定义一个HashMap,实现基础的功能
 // TODO 待完成
@@ -29,7 +30,17 @@ public class MyHashMap<K,V> implements Cloneable, Serializable {
         selfHashMap.remove("Test5");
         selfHashMap.remove("Test8");
         System.out.println(selfHashMap.get("Test3").toString());
+        boolean contains = selfHashMap.contains("Test5");
+        boolean contains1 = selfHashMap.contains("Test3");
+        System.out.println("contains"+contains1+contains);
 
+        Collection<String> strings = selfHashMap.values();
+
+        HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
+        //方法2 获取所有的key
+        Set<String> stringSet = stringStringHashMap.keySet();
+       //方法三 put入一个新的map
+      //        stringStringHashMap.putAll();
     }
 
 
@@ -114,12 +125,10 @@ public class MyHashMap<K,V> implements Cloneable, Serializable {
                 //遍历数组查看是否存在Key相等的值 首节点的下一节点不为空时
                 for (;;){
                     if(p.hash==hash && (p.key==Key || p.key.equals(Key))){
-                        //TODO e前面的节点保存到了p中了
                         Node<K,V> e=new Node(hash, Key, Value, p.next,p.pre);
                         p.pre.next=e;
                         break;
                     }
-
                     if(p.next!=null){
                         p= p.next;
                     }else{
@@ -131,8 +140,6 @@ public class MyHashMap<K,V> implements Cloneable, Serializable {
             }
         }
         //判断是否扩容 先忽略了
-        //打印下是否正确
-        log.info("添加后的table数组为{}和{}",table[0],table[1]);
 
     }
 
@@ -214,4 +221,71 @@ public class MyHashMap<K,V> implements Cloneable, Serializable {
             afterNodeInsertion(hash,kvNode);
         }
     }
+
+    //判断是否存在的方法
+    public boolean contains(String Key){
+
+        int hash = hash(Key);
+
+        Node<K, V> kvNode = table[hash];
+
+        if(kvNode==null)
+            return false;
+
+        for(;;){
+
+            if(kvNode.hash==hash &&(kvNode.getKey()==Key || kvNode.getKey().equals(Key))){
+                return true;
+            }
+            kvNode = kvNode.next;
+            if(kvNode==null){
+                return false;
+            }
+        }
+    }
+
+      public   Collection<String> values(){
+
+          Collection<String> arrayList = new ArrayList<>();
+
+          Node kvNode=null;
+          for (int i = 0; i < DEFAULT_INITIAL_CAPACITY; i++) {
+
+              if ((kvNode=table[i])!=null){
+
+                  do{
+                      arrayList.add((String) kvNode.value);
+
+                  }while ((kvNode=kvNode.next)!=null);
+
+              }
+
+
+          }
+
+          return arrayList;
+      }
+
+      //获取所有的Key值
+      public Set<String> keySet(){
+
+        Node kvNode=null;
+
+          Set<String> str = new HashSet<String>();
+
+          for (int i = 0; i < DEFAULT_INITIAL_CAPACITY; i++) {
+
+              if(kvNode!=null){
+                  do {
+
+                     str.add((String) kvNode.getKey());
+
+                  }while ((kvNode=kvNode.next)!=null);
+              }
+          }
+         return str;
+      }
+
+
+
 }
