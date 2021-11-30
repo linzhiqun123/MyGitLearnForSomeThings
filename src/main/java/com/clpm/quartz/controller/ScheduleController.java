@@ -4,6 +4,7 @@ import com.clpm.quartz.Jpa.YxStoreOrderQueryCriteria;
 import com.clpm.quartz.Jpa.YxStoreProduct;
 import com.clpm.quartz.Jpa.YxStoreProoductRepository;
 import com.clpm.quartz.config.CodeTable;
+import com.clpm.quartz.util.JavaProperties;
 import com.clpm.quartz.util.QueryHelp;
 import com.clpm.quartz.config.Limit;
 import com.clpm.quartz.job.JobTask;
@@ -12,6 +13,11 @@ import com.clpm.quartz.pojo.CommonResult;
 import com.clpm.quartz.pojo.Page;
 import com.clpm.quartz.pojo.User;
 import com.clpm.quartz.service.ScheduleService;
+import com.clpm.quartz.util.SpringUtils;
+import com.clpm.quartz.util.autoGeneralUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import freemarker.template.TemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,12 +28,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.criteria.Predicate;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -178,4 +192,74 @@ public class ScheduleController {
     public User submit(@RequestBody User user){
         return user;
     }
+
+    @PostMapping("/doSUmUser")
+    @ResponseBody
+    public User doSUmUser(@RequestBody User user){
+
+        // 路径根据自己项目的特点调整
+        String rootPath = "D:\\jv\\quartz\\src\\main\\java";
+        String packageName = "com.clpm.quartz.pojo";
+        String templatePath = "D:\\jv\\quartz\\src\\main\\resources\\templates";
+        String templateName = "entity.ftl";
+        JavaProperties userEntity = new JavaProperties("UserEntity", packageName);
+        userEntity.addField(String.class, "username");
+        userEntity.addField(LocalDate.class, "birthday");
+        userEntity.addField(LocalDateTime.class, "addTime");
+        userEntity.addField(Integer.class, "gender");
+        userEntity.addField(Integer.class, "age");
+        try {
+            com.clpm.quartz.util.autoGeneralUtils.autoCodingJavaEntity(rootPath, templatePath, templateName, userEntity);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    //一分钟内最多反问4次本接口
+    @GetMapping("/doRestTemplate")
+    @ApiOperation("doRestTemplate测试")
+    @ResponseBody
+    public String doRestTemplate(){
+
+
+        String url="http://127.0.0.1:8088/schedule/doSUmUser";
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        //定义请求参数类型，这里用json所以是MediaType.APPLICATION_JSON
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        //RestTemplate带参传的时候要用HttpEntity<?>对象传递
+        ObjectMapper objectMapper = new ObjectMapper();
+        User user = new User();
+        user.setUserName("lzq");user.setPassWord("123");
+        String writeValueAsString=null;
+        try {
+            writeValueAsString   = objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        HttpEntity<String> request = new HttpEntity<>(writeValueAsString, headers);
+
+        ResponseEntity<String> entity = restTemplate.postForEntity(url, request, String.class);
+        //获取3方接口返回的数据通过entity.getBody();它返回的是一个字符串；
+        String entityBody = entity.getBody();
+
+        try {
+            User readValue = objectMapper.readValue(entityBody, User.class);
+            log.info("获取的值为{}",readValue);
+            log.info("===============================================");
+            log.info("所有的返回结果{}",entity);
+            log.info("================================================");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.info("外呼请求获取的值为{}",entityBody);
+        return "index";
+    }
+
+
 }
