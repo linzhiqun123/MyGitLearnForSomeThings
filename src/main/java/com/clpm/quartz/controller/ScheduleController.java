@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.criteria.Predicate;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -246,9 +252,9 @@ public class ScheduleController {
         ResponseEntity<String> entity = restTemplate.postForEntity(url, request, String.class);
         //获取3方接口返回的数据通过entity.getBody();它返回的是一个字符串；
         String entityBody = entity.getBody();
-
+        User readValue = null;
         try {
-            User readValue = objectMapper.readValue(entityBody, User.class);
+             readValue = objectMapper.readValue(entityBody, User.class);
             log.info("获取的值为{}",readValue);
             log.info("===============================================");
             log.info("所有的返回结果{}",entity);
@@ -258,7 +264,29 @@ public class ScheduleController {
         }
 
         log.info("外呼请求获取的值为{}",entityBody);
-        return "index";
+
+        Class<? extends User> entityClass = readValue.getClass();
+        Field[] declaredFields = entityClass.getDeclaredFields();
+
+        for (Field declaredField : declaredFields) {
+            if(!declaredField.getName().equals("userName")){
+                continue;
+            }
+            try {
+                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(declaredField.getName(),entityClass);
+                Method writeMethod = propertyDescriptor.getWriteMethod();
+                try {
+                    writeMethod.invoke(readValue,"linzhiqun");
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            } catch (IntrospectionException e) {
+                e.printStackTrace();
+            }
+        }
+        return readValue.toString();
     }
 
 

@@ -1,6 +1,5 @@
 package com.clpm.quartz.util;
 
-import lombok.Data;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
