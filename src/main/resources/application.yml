@@ -57,3 +57,23 @@ logging:
     com.clpm.quartz.mapper: DEBUG
 
 
+  rabbitmq:
+    # 开启消息确认模式
+    # 消息发送到交换机确认机制，是否确认回调
+    # publisher-confirms: true
+    # 是否返回回调
+    publisher-returns: true
+    template:
+      #开启mandatory: true, basic.return方法将消息返还给生产者
+      mandatory: true
+    listener:
+      simple:
+        # 手动应答
+        acknowledge-mode: manual
+        # 最少消费者数量
+        concurrency: 1
+        # 最多消费者数量
+        max-concurrency: 10
+        # 支持重试
+        retry:
+          enabled: true

@@ -44,9 +44,12 @@ public class MybatisPageInterceptor implements Interceptor {
         if(ObjectUtil.isNotNull(page)){
 
             Method method = invocation.getMethod();
-            MetaObject metaObject = MetaObject.forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
+            MetaObject metaObject = MetaObject.forObject(statementHandler,
+                    SystemMetaObject.DEFAULT_OBJECT_FACTORY,
+                    SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
             //先拦截到RoutingStatementHandler，里面有个StatementHandler类型的delegate变量，其实现类是BaseStatementHandler，然后就到BaseStatementHandler的成员变量mappedStatement
-            MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
+            MappedStatement mappedStatement = (MappedStatement)
+                    metaObject.getValue("delegate.mappedStatement");
 
             String mappedStatementId = mappedStatement.getId();
             //类路径
@@ -82,4 +85,16 @@ public class MybatisPageInterceptor implements Interceptor {
     public void setProperties(Properties properties) {
 
     }
+
+    public static void main(String[] args) {
+
+        int sun=10;
+        try {
+         sun=sun/0;
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(sun);
+    }
+
 }

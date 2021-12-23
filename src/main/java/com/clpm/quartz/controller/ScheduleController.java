@@ -4,8 +4,7 @@ import com.clpm.quartz.Jpa.YxStoreOrderQueryCriteria;
 import com.clpm.quartz.Jpa.YxStoreProduct;
 import com.clpm.quartz.Jpa.YxStoreProoductRepository;
 import com.clpm.quartz.config.CodeTable;
-import com.clpm.quartz.util.JavaProperties;
-import com.clpm.quartz.util.QueryHelp;
+import com.clpm.quartz.util.*;
 import com.clpm.quartz.config.Limit;
 import com.clpm.quartz.job.JobTask;
 import com.clpm.quartz.job.SendEmailJob;
@@ -13,8 +12,6 @@ import com.clpm.quartz.pojo.CommonResult;
 import com.clpm.quartz.pojo.Page;
 import com.clpm.quartz.pojo.User;
 import com.clpm.quartz.service.ScheduleService;
-import com.clpm.quartz.util.SpringUtils;
-import com.clpm.quartz.util.autoGeneralUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.TemplateException;
@@ -223,6 +220,15 @@ public class ScheduleController {
         }
         return user;
     }
+
+    //一分钟内最多反问4次本接口
+    @GetMapping("/doRabbitTemplate")
+    @ApiOperation("doRabbitTemplate测试")
+    @ResponseBody
+    public String doRabbitTemplate(){
+              return     RabbitMqUtils.SendMqMessage();
+    }
+
 
     //一分钟内最多反问4次本接口
     @GetMapping("/doRestTemplate")

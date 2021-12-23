@@ -4,6 +4,8 @@ import com.clpm.quartz.config.CodeTable;
 import com.clpm.quartz.util.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -21,6 +23,13 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @MapperScan("com.clpm.quartz.mapper")
 public class QuartzApplication {
+
+
+      //RabbitMq的MessageConverter
+    @Bean
+    public MessageConverter messageConverter(){
+        return new Jackson2JsonMessageConverter();
+    }
 
 
     //线程池
