@@ -10,6 +10,7 @@ import org.springframework.amqp.core.Message;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,24 @@ public class RabbitMqListener {
 
     @Value("server.port")
     public String port;
+
+    public int sum=1;
+
+
+    @RabbitListener(queues = "QUEUE_D")
+    public void TtlMqListener(Message obj, Channel channel) throws IOException {
+        try {
+            log.info(obj.toString());
+            log.info("当前系统时间为"+new Date());
+            log.info("死信数据处理完成,进行手动签收消息");
+            channel.basicAck(obj.getMessageProperties().getDeliveryTag(), false);
+        } catch (IOException e) {
+            log.error("接受mq消费出错,进行重新入队处理");
+            channel.basicReject(obj.getMessageProperties().getDeliveryTag(),true);
+        }
+    }
+
+
 
     @RabbitListener(queues = "helloExchange.gulimall-product")
     public void MQListener(Message obj, Channel channel) throws IOException {

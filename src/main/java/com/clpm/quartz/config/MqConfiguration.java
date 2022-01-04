@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
  * @Author 86178
  * @create 2021/12/23 21:57
  */
+//避免因为mq宕机导致的消息丢失
 @Component
 @Slf4j
 public class MqConfiguration implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback {
@@ -28,6 +29,7 @@ public class MqConfiguration implements RabbitTemplate.ConfirmCallback,RabbitTem
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
     }
+    //生产者到达交换机
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         String id = correlationData != null ? correlationData.getId() : "";
@@ -37,7 +39,7 @@ public class MqConfiguration implements RabbitTemplate.ConfirmCallback,RabbitTem
             log.info("接收消息失败id为：{},原因：{}",id,cause);
         }
     }
-
+    //交换机到达队列失败
     @Override
     public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
         log.info("交换机：{}，消息被退回：{},退回原因：{}",
